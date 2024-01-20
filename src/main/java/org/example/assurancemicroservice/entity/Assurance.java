@@ -12,7 +12,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "asurance")
+@Table(name = "assurance")
 @Data
 @NoArgsConstructor
 public class Assurance {

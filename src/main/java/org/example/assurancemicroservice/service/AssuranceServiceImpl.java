@@ -8,17 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class AssuranceServiceImpl implements AssuranceService {
 
-    @Autowired
-    private AssuranceRepository assuranceRepository;
+    private final AssuranceRepository assuranceRepository;
+    private final ModelMapper modelMapper;
 
-    //added an AppConfig class to create a Bean method for ModelMapper
     @Autowired
-    private ModelMapper modelMapper;
+    public AssuranceServiceImpl(AssuranceRepository assuranceRepository, ModelMapper modelMapper) {
+        this.assuranceRepository = assuranceRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public List<AssuranceDto> getAllAssurances() {
@@ -30,13 +33,24 @@ public class AssuranceServiceImpl implements AssuranceService {
 
     @Override
     public AssuranceDto getAssuranceById(int id) {
-        Assurance assurance = assuranceRepository.findById(id).orElse(null);
+        Optional<Assurance> optionalAssurance = assuranceRepository.findById(id);
+        return optionalAssurance.map(this::convertToDto).orElse(null);
+    }
+
+    @Override
+    public AssuranceDto saveAssurance(AssuranceDto assuranceDto) {
+        Assurance assurance = convertToEntity(assuranceDto);
+        assurance = assuranceRepository.save(assurance);
         return convertToDto(assurance);
     }
 
-
-
-
+    @Override
+    public void saveAssurances(List<AssuranceDto> assuranceDtos) {
+        List<Assurance> assurances = assuranceDtos.stream()
+                .map(this::convertToEntity)
+                .collect(Collectors.toList());
+        assuranceRepository.saveAll(assurances);
+    }
 
     private AssuranceDto convertToDto(Assurance assurance) {
         return modelMapper.map(assurance, AssuranceDto.class);

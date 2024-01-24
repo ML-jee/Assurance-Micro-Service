@@ -25,7 +25,7 @@ public class AssuranceController {
     @GetMapping("/retrieveFromAdminAndSave")
     public ResponseEntity<String> retrieveAssurancesFromAdminAndSave() {
         // Appelez le microservice assurance admin pour récupérer les assurances
-        String adminServiceUrl = "http://localhost:8087/admin/all";
+        String adminServiceUrl = "http://admin-microservice/admin/all";
 
         // Use ParameterizedTypeReference to specify the type of elements in the list
         ResponseEntity<List<AssuranceDto>> responseEntity = restTemplate.exchange(
